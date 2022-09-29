@@ -1,15 +1,16 @@
-const express = require('express')
-const passport = require('passport')
-const { FlagClient, FlagNotFoundError } = require('tog-node')
-const bodyParser = require('body-parser')
-const Joi = require('@hapi/joi')
+import  express  from 'express';
+import  passport  from 'passport';
+import { FlagClient, FlagNotFoundError } from 'tog-node';
+import  bodyParser  from 'body-parser'
+import  Joi  from '@hapi/joi';
+import config from '../services/config.js';
+import  audit  from '../services/audit.js';
+import { validateJwt} from './auth_aad.js';
 
-const { redisUrl, isRedisCluster } = require('../services/config')
-const audit = require('../services/audit')
 
 const authenticate = passport.authenticate('bearer', { session: false })
 
-const client = new FlagClient(redisUrl, { cluster: isRedisCluster })
+const client = new FlagClient(config.redisUrl, { cluster: config.isRedisCluster })
 
 const schema = Joi.object().keys({
   description: Joi.string(),
@@ -20,8 +21,10 @@ const schema = Joi.object().keys({
     })
   )
 })
+//module.exports = express.Router().use(authenticate)
 
-module.exports = express.Router().use(authenticate)
+// module.exports = express.Router()
+const flags = express.Router()
   .get('/:namespace', (req, res, next) => {
     return client.listFlags(req.params.namespace)
       .then(flags => res.status(200).json(flags))
@@ -39,9 +42,10 @@ module.exports = express.Router().use(authenticate)
       )
   })
 
-  .put('/:namespace/:name', bodyParser.json(), (req, res, next) => {
-    const { namespace, name } = req.params
+  .put('/:namespace/:name', validateJwt, bodyParser.json(), (req, res, next) => {
 
+
+    const { namespace, name } = req.params
     const val = schema.validate(req.body)
     if (val.error) {
       return res.status(422).json(val.error)
@@ -56,17 +60,23 @@ module.exports = express.Router().use(authenticate)
 
     return client.saveFlag(flag)
       .then(() => res.status(200).json(flag))
-      .then(() => audit(req, 'flags', flag))
+      .then(() => audit(req, flag.namespace + '/' + flag.name, flag))
       .catch(next)
   })
 
-  .delete('/:namespace/:name', (req, res, next) => {
+  .delete('/:namespace/:name', validateJwt, (req, res, next) => {
     const { namespace, name } = req.params
 
     return client.deleteFlag(namespace, name)
       .then(deleted => deleted
         ? res.status(204).end()
         : res.status(404).json({ message: 'flag not found' }))
-  })
+  });
 
-module.exports.quit = () => client.redis.quit()
+export default flags;
+
+const quit = () => {
+  client.redis.quit();
+};
+
+export {quit};

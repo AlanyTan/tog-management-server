@@ -1,4 +1,5 @@
-module.exports = {
+//module.exports = {
+const config = {
   oauthClientId: getEnv('OAUTH_CLIENT_ID'),
   oauthClientSecret: getEnv('OAUTH_CLIENT_SECRET'),
   redisUrl: getEnv('REDIS_URL'),
@@ -6,6 +7,7 @@ module.exports = {
   domainWhitelist: getList('DOMAIN_WHITELIST'),
   oauthCallbackUrl: getEnv('OAUTH_CALLBACK_URL'),
 }
+export default config;
 
 function getEnv (key) {
   const value = process.env[key]

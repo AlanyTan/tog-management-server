@@ -23,16 +23,18 @@ const client = new FlagClient(redisUrl)
 
 afterAll(() => client.redis.quit())
 afterAll(router.quit)
-afterEach(() => client.redis.flushdb())
+//afterEach(() => client.redis.flushdb())
 
 describe('flags api', () => {
   describe('list flags', () => {
     test('returns list of flags', async () => {
       const flags = [
         { name: 'one', rollout: [{ value: true }] },
-        { name: 'two', rollout: [{ percentage: 30, value: true }] }
+        { name: 'two', rollout: [{ percentage: 30, value: true }] },
+        { name: 'capv2.alerts', rollout: [{ percentage: 40, value: true }] },
+        { name: 'capv1', rollout: [ { value:true }]}
       ]
-        .map(f => ({ namespace: 'test_ns', ...f }))
+        .map(f => ({ namespace: 'capmetrics', ...f }))
 
       await Promise.all(flags.map(flag => client.saveFlag(flag)))
 

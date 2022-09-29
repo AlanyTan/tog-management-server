@@ -1,9 +1,12 @@
-module.exports = function audit (req, resource, body) {
-  req.log.child({
+//module.exports = function audit (req, resource, body) {
+const audit = (req, resource, body) => {
+    const user=((req.user != null) ? req.user : "someone") + " from " + req.client.remoteAddress + ":" + req.client.remotePort;
+    req.log.child({
     category: 'audit',
     resource,
     action: req.method,
-    user: req.user.email,
+    user: user,
     body
-  }).info(`Audit: ${req.method} on ${resource}`)
+  }).info(`Audit: ${user} performed ${req.method} on ${resource}`)
 }
+export default audit;

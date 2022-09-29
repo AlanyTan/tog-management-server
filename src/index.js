@@ -1,18 +1,29 @@
-require('dotenv/config')
-const express = require('express')
-const passport = require('passport')
-const pino = require('pino')
-const pinoHttp = require('express-pino-logger')
+import 'dotenv/config';
+import  express  from 'express';
+import cookieParser from 'cookie-parser';
+//import  passport  from 'passport';
+import  pino  from 'pino';
+import  pinoHttp  from 'express-pino-logger';
 
-const auth = require('./routes/auth')
-const flags = require('./routes/flags')
+import  auth  from './routes/auth_aad.js';
+import  flags  from './routes/flags.js';
+import simpleui from './routes/simpleui.js';
 
 const log = pino()
 
+// express()
+//   .use(pinoHttp(log))
+//   .use(passport.initialize())
+//   .use('/auth', auth)
+//   .use('/flags', flags)
+//   .listen(3000, () =>
+//     log.child({ category: 'application', action: 'started' }).info('server started'))
+
 express()
-  .use(pinoHttp(log))
-  .use(passport.initialize())
-  .use('/auth', auth)
-  .use('/flags', flags)
-  .listen(3000, () =>
-    log.child({ category: 'application', action: 'started' }).info('server started'))
+    .use(pinoHttp(log))
+    .use('/auth', auth)
+    .use('/',simpleui)
+    .use('/flags', flags)
+    .use(cookieParser())
+    .listen(3000, () =>
+      log.child({ category: 'application', action: 'started' }).info('server started'))

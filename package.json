@@ -1,24 +1,30 @@
 {
   "name": "tog-management-server",
   "version": "0.4.8",
-  "description": "",
+  "type": "module",
+  "description": "Server application that provides management of Feature Toggle flags and experiments.  Best used with [Tog CLI](https://github.com/escaletech/tog-cli).",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
+    "start:debug": "node src/index.js --debug --watch",
     "test": "jest --runInBand",
-    "release": "./scripts/release.sh"
+    "release": "./scripts/release.sh",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@azure/msal-node": "^1.14.0",
     "@hapi/joi": "^15.1.0",
     "body-parser": "^1.19.0",
-    "cookie-parser": "^1.4.4",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "express-pino-logger": "^4.0.0",
     "ioredis": "^4.16.0",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^2.1.4",
     "passport": "^0.4.0",
     "passport-google-oauth": "^2.0.0",
     "passport-http-bearer": "^1.0.1",
@@ -29,6 +35,7 @@
   "devDependencies": {
     "@types/hapi__joi": "^15.0.2",
     "@types/jest": "^25.1.3",
+    "husky": "^8.0.1",
     "jest": "^27.5.1",
     "standard-version": "^9.1.0",
     "supertest": "^4.0.2"
@@ -37,5 +44,13 @@
     "env": {
       "jest": true
     }
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/escaletech/tog-management-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/escaletech/tog-management-server/issues"
+  },
+  "homepage": "https://github.com/escaletech/tog-management-server#readme"
 }
