@@ -1,16 +1,13 @@
 import  express  from 'express';
-import  passport  from 'passport';
 import { FlagClient, FlagNotFoundError } from 'tog-node';
 import  bodyParser  from 'body-parser'
 import  Joi  from '@hapi/joi';
-import config from '../services/config.js';
+import {appConfig} from '../services/config.js';
 import  audit  from '../services/audit.js';
 import { validateJwt} from './auth_aad.js';
 
 
-const authenticate = passport.authenticate('bearer', { session: false })
-
-const client = new FlagClient(config.redisUrl, { cluster: config.isRedisCluster })
+const client = new FlagClient(appConfig.redisUrl, { cluster: appConfig.isRedisCluster })
 
 const schema = Joi.object().keys({
   description: Joi.string(),

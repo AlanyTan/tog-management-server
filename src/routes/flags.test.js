@@ -1,17 +1,6 @@
 const express = require('express')
 const request = require('supertest')
 const { FlagClient } = require('tog-node')
-const passport = require('passport')
-const BearerStrategy = require('passport-http-bearer').Strategy
-
-passport.use(new BearerStrategy((token, done) => {
-  return done(null, { email: 'foo@bar.com' })
-}))
-
-process.env.OAUTH_CLIENT_ID = '_'
-process.env.OAUTH_CLIENT_SECRET = '_'
-process.env.DOMAIN_WHITELIST = '_'
-process.env.OAUTH_CALLBACK_URL= '_'
 
 const redisUrl = 'redis://127.0.0.1:6379'
 process.env.REDIS_URL = redisUrl

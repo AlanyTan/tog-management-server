@@ -1,13 +1,15 @@
-//module.exports = {
-const config = {
-  oauthClientId: getEnv('OAUTH_CLIENT_ID'),
-  oauthClientSecret: getEnv('OAUTH_CLIENT_SECRET'),
+
+const appConfig = {
   redisUrl: getEnv('REDIS_URL'),
   isRedisCluster: process.env.REDIS_CLUSTER === 'true',
   domainWhitelist: getList('DOMAIN_WHITELIST'),
-  oauthCallbackUrl: getEnv('OAUTH_CALLBACK_URL'),
+  SERVER_PORT: getEnv('PORT'),
+  BASE_URL: getEnv('BASE_URL'), 
+  CLIENT_ID: getEnv('CLIENT_ID'),
+  CLIENT_SECRET: getEnv('CLIENT_SECRET'),
+  TENANT_ID: getEnv('TENANT_ID'),
 }
-export default config;
+export {appConfig};
 
 function getEnv (key) {
   const value = process.env[key]

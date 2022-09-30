@@ -6,23 +6,20 @@ import express from "express";
 import msal from '@azure/msal-node';
 import jwt from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
+import {appConfig } from "../services/config.js"
 
-//const SERVER_PORT = process.env.PORT || 3000;
-const BASE_URL = process.env.BASE_URL || "http://localhost:3000"; 
-const REDIRECT_URI = BASE_URL + "/auth/redirect";
-const CLIENT_ID = process.env.CLIENT_ID;
-const CLIENT_SECRET = process.env.CLIENT_SECRET
-const TENANT_ID = process.env.TENANT_ID;
-const AUTHORITY="https://login.microsoftonline.com/" + TENANT_ID
+
+const REDIRECT_URI = appConfig.BASE_URL + "/auth/redirect";
+const AUTHORITY="https://login.microsoftonline.com/" + appConfig.TENANT_ID
 const DISCOVERY_KEYS_ENDPOINT = AUTHORITY + "/discovery/v2.0/keys";
 
 // Before running the sample, you will need to replace the values in the config, 
 // including the clientSecret
 const config = {
     auth: {
-        clientId: CLIENT_ID,
+        clientId: appConfig.CLIENT_ID,
         authority: AUTHORITY,
-        clientSecret: CLIENT_SECRET
+        clientSecret: appConfig.CLIENT_SECRET
     },
     system: {
         loggerOptions: {
@@ -45,8 +42,8 @@ const validateJwt = (req, res, next) => {
         const token = authHeader.split(' ')[1];
         
         const validationOptions = {
-            audience: "api://" + config.auth.clientId, // v2.0 token
-            issuer: "https://sts.windows.net/" + TENANT_ID + "/" // config.auth.authority + "/v2.0" // v2.0 token
+            audience: "api://" + config.auth.clientId, // Azure registered App audience
+            issuer: "https://sts.windows.net/" + appConfig.TENANT_ID + "/" // Azure registered App issuer
         }
 
         jwt.verify(token, getSigningKeys, validationOptions, (err, payload) => {
@@ -103,16 +100,14 @@ const auth = express.Router()
     };
 
     
-    pca.acquireTokenByCode(tokenRequest).then((response) => {
-        // console.log("\nResponse: \n:", response);
-        //console.log("access token:", response.accessToken);
-        //res.setHeader ('Authorization',  req.header.authorization);
-        //res.redirect(302,'/');
+    pca.acquireTokenByCode(tokenRequest).then((response) => {   
+        //if token retrieval is successful, set it into cookie as 'token=${token}'    
         res.cookie("token", response.accessToken, {
             httpOnly: false,
             secure: false,
         });
-        res.send("logged in. <script > window.location.assign('/')</script>");
+        //set auto refresh of the page to the /auth/redirect
+        res.send("logged in. <script> window.location.assign('/')</script>");
     }).catch((error) => {
         console.log(error);
         res.status(500).send(error);
