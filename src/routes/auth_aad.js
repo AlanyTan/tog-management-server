@@ -9,7 +9,8 @@ import jwksClient from "jwks-rsa";
 import {appConfig } from "../services/config.js"
 
 
-const REDIRECT_URI = appConfig.BASE_URL + "/auth/redirect";
+const REDIRECT_URI = appConfig.baseUrl + "/auth/redirect";
+const AUTH_URL = appConfig.baseUrl + "/auth";
 const AUTHORITY="https://login.microsoftonline.com/" + appConfig.TENANT_ID
 const DISCOVERY_KEYS_ENDPOINT = AUTHORITY + "/discovery/v2.0/keys";
 
@@ -36,7 +37,7 @@ const validateJwt = (req, res, next) => {
     let authHeader = req.headers.authorization;
     //in case the jwt is in the cookie: 
     if ( authHeader == null ) {
-        authHeader = "Bearer " + req.headers["cookie"].split(";")[0].split("=")[1];
+        authHeader = "Bearer " + req.headers["cookie"]?.split(";")[0]?.split("=")[1];
     }
     if (authHeader) {
         const token = authHeader.split(' ')[1];
@@ -49,7 +50,7 @@ const validateJwt = (req, res, next) => {
         jwt.verify(token, getSigningKeys, validationOptions, (err, payload) => {
             if (err) {
                 console.log(err);
-                return res.sendStatus(403);
+                return res.send("Not authorized: <script> window.location.assign('/auth')</script>" + err.message, 403);
             }
             req.user=payload.unique_name;
             next();
@@ -57,7 +58,7 @@ const validateJwt = (req, res, next) => {
         //return true;
     } else {
         //return false;
-        res.sendStatus(401);
+        res.send("Not Authenticated.  Have you logged in to AAD yet? <script> window.location.assign('/auth')</script>", 401);
     }
 };
 
@@ -81,7 +82,7 @@ const pca = new msal.ConfidentialClientApplication(config);
 const auth = express.Router()
  .get('/', (req, res) => {
     const authCodeUrlParameters = {
-        scopes: ["api://***REMOVED***/***REMOVED***"],
+        scopes: ["api://" + appConfig.CLIENT_ID + "/" + appConfig.APP_NAME],
         redirectUri: REDIRECT_URI,
     };
 
@@ -95,7 +96,7 @@ const auth = express.Router()
     const tokenRequest = {
         code: req.query.code,
         //scopes: ["user.read"],
-        scopes: ["api://***REMOVED***/***REMOVED***"],
+        scopes: ["api://" + appConfig.CLIENT_ID + "/" + appConfig.APP_NAME],
         redirectUri: REDIRECT_URI,
     };
 
@@ -115,4 +116,3 @@ const auth = express.Router()
 });
 export default auth;
 
-//app.listen(SERVER_PORT, () => console.log(`Msal Node Auth Code Sample app listening on port ${SERVER_PORT}!`))

@@ -17,5 +17,5 @@ express()
     .use('/',simpleui)
     .use('/flags', flags)
     .use(cookieParser())
-    .listen(appConfig.SERVER_PORT, () =>
+    .listen(appConfig.serverPort, () =>
       log.child({ category: 'application', action: 'started' }).info('server started'))

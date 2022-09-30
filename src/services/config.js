@@ -3,11 +3,12 @@ const appConfig = {
   redisUrl: getEnv('REDIS_URL'),
   isRedisCluster: process.env.REDIS_CLUSTER === 'true',
   domainWhitelist: getList('DOMAIN_WHITELIST'),
-  SERVER_PORT: getEnv('PORT'),
-  BASE_URL: getEnv('BASE_URL'), 
+  serverPort: getEnv('PORT'),
+  baseUrl: getEnv('BASE_URL'), 
   CLIENT_ID: getEnv('CLIENT_ID'),
   CLIENT_SECRET: getEnv('CLIENT_SECRET'),
   TENANT_ID: getEnv('TENANT_ID'),
+  APP_NAME: getEnv('APP_NAME')
 }
 export {appConfig};
 
