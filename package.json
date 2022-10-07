@@ -25,6 +25,7 @@
     "ioredis": "^4.16.0",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^2.1.4",
+    "murmurhash-js": "^1.0.0",
     "passport": "^0.4.0",
     "passport-google-oauth": "^2.0.0",
     "passport-http-bearer": "^1.0.1",

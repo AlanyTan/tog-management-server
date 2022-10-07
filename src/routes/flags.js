@@ -1,5 +1,5 @@
 import  express  from 'express';
-import { FlagClient, FlagNotFoundError } from 'tog-client';
+import { FlagClient, FlagNotFoundError , resolveState} from 'tog-client';
 import  bodyParser  from 'body-parser'
 import  Joi  from '@hapi/joi';
 import {appConfig} from '../services/config.js';
@@ -23,7 +23,7 @@ const schema = Joi.object().keys({
 
 // module.exports = express.Router()
 const flags = express.Router()
-  .get('/:namespace', (req, res, next) => {
+  .get('/:namespace', validateJwt, (req, res, next) => {
     return client.listFlags(req.params.namespace)
       .then(flags => res.status(200).json(flags))
       .catch(next)
@@ -38,6 +38,30 @@ const flags = express.Router()
           ? res.status(404).json({ message: 'flag not found' })
           : next(err)
       )
+  })
+
+  .get('/forsession/:namespace/:name', (req, res, next) => {
+    const { namespace, name } = req.params;
+    return client.getFlag(namespace, name)
+      .then ( flag => {
+        if ( req.query?.session == null ) {
+          res.status(400).json({message:"no valid session data provided."});
+        } else {
+          try {
+            const session=JSON.parse(decodeURI(req.query?.session));
+            res.status(200).json(resolveState(flag.rollout, flag.timestamp || 0, session.id, session.traits ?? [] ));
+          } catch (err) {
+            res.status(400).json({message:"session data is not properly encoded or stringified." + err}); 
+    
+          }
+        }
+      })
+      .catch(err =>
+        err.name === FlagNotFoundError.name
+          ? res.status(404).json({ message: 'flag not found' })
+          : next(err)
+      )
+    // to generate a test query value: console.log("session=" + encodeURI(JSON.stringify({namespace:"capmetrics", id:"sess_id", traits:["big","circle"]})))
   })
 
   .put('/:namespace/:name', validateJwt, bodyParser.json(), (req, res, next) => {

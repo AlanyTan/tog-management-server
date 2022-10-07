@@ -19,6 +19,7 @@
         "ioredis": "^4.16.0",
         "jsonwebtoken": "^8.5.1",
         "jwks-rsa": "^2.1.4",
+        "murmurhash-js": "^1.0.0",
         "passport": "^0.4.0",
         "passport-google-oauth": "^2.0.0",
         "passport-http-bearer": "^1.0.1",
@@ -7081,7 +7082,7 @@
     "node_modules/murmurhash-js": {
       "version": "1.0.0",
       "resolved": "https://registry.npmjs.org/murmurhash-js/-/murmurhash-js-1.0.0.tgz",
-      "integrity": "sha1-sGJ44h/Gw3+lMTcysEEry2rhX1E="
+      "integrity": "sha512-TvmkNhkv8yct0SVBSy+o8wYzXjE4Zz3PCesbfs8HiCXXdcTuocApFv11UWlNFWKYsP2okqrhb7JNlSm9InBhIw=="
     },
     "node_modules/natural-compare": {
       "version": "1.4.0",
@@ -14710,7 +14711,7 @@
     "murmurhash-js": {
       "version": "1.0.0",
       "resolved": "https://registry.npmjs.org/murmurhash-js/-/murmurhash-js-1.0.0.tgz",
-      "integrity": "sha1-sGJ44h/Gw3+lMTcysEEry2rhX1E="
+      "integrity": "sha512-TvmkNhkv8yct0SVBSy+o8wYzXjE4Zz3PCesbfs8HiCXXdcTuocApFv11UWlNFWKYsP2okqrhb7JNlSm9InBhIw=="
     },
     "natural-compare": {
       "version": "1.4.0",
