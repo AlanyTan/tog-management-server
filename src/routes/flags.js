@@ -1,5 +1,5 @@
 import  express  from 'express';
-import { FlagClient, FlagNotFoundError } from 'tog-node';
+import { FlagClient, FlagNotFoundError } from 'tog-client';
 import  bodyParser  from 'body-parser'
 import  Joi  from '@hapi/joi';
 import {appConfig} from '../services/config.js';
@@ -14,7 +14,8 @@ const schema = Joi.object().keys({
   rollout: Joi.array().items(
     Joi.object().keys({
       value: Joi.boolean().required(),
-      percentage: Joi.number().min(0).max(99)
+      percentage: Joi.number().min(0).max(100),
+      traits: Joi.array().items(Joi.string())
     })
   )
 })

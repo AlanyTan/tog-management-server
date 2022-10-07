@@ -24,6 +24,7 @@
         "passport-http-bearer": "^1.0.1",
         "pino": "^5.12.6",
         "ramda": "^0.26.1",
+        "tog-client": "./linepulse-mdl-featuretoggle-client-node/lib",
         "tog-node": "^0.4.3"
       },
       "devDependencies": {
@@ -35,6 +36,10 @@
         "supertest": "^4.0.2"
       }
     },
+    "../linepulse-mdl-featuretoggle-client-node/lib": {
+      "extraneous": true
+    },
+    "linepulse-mdl-featuretoggle-client-node/lib": {},
     "node_modules/@ampproject/remapping": {
       "version": "2.1.2",
       "resolved": "https://registry.npmjs.org/@ampproject/remapping/-/remapping-2.1.2.tgz",
@@ -8633,6 +8638,10 @@
         "node": ">=8.0"
       }
     },
+    "node_modules/tog-client": {
+      "resolved": "linepulse-mdl-featuretoggle-client-node/lib",
+      "link": true
+    },
     "node_modules/tog-node": {
       "version": "0.4.3",
       "resolved": "https://registry.npmjs.org/tog-node/-/tog-node-0.4.3.tgz",
@@ -15912,6 +15921,9 @@
       "requires": {
         "is-number": "^7.0.0"
       }
+    },
+    "tog-client": {
+      "version": "file:linepulse-mdl-featuretoggle-client-node/lib"
     },
     "tog-node": {
       "version": "0.4.3",

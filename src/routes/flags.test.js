@@ -1,6 +1,6 @@
 const express = require('express')
 const request = require('supertest')
-const { FlagClient } = require('tog-node')
+const { FlagClient } = require('tog-client')
 
 const redisUrl = 'redis://127.0.0.1:6379'
 process.env.REDIS_URL = redisUrl

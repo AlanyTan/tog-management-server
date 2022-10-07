@@ -1,0 +1,3 @@
+[submodule "linepulse-mdl-featuretoggle-client-node"]
+	path = linepulse-mdl-featuretoggle-client-node
+	url = https://github.com/AcertaAnalyticsSolutions/linepulse-mdl-featuretoggle-client-node.git

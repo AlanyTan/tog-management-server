@@ -30,6 +30,7 @@
     "passport-http-bearer": "^1.0.1",
     "pino": "^5.12.6",
     "ramda": "^0.26.1",
+    "tog-client": "./linepulse-mdl-featuretoggle-client-node/lib",
     "tog-node": "^0.4.3"
   },
   "devDependencies": {
