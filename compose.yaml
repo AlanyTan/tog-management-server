@@ -1,0 +1,16 @@
+services:
+  togserver:
+    image: tog-management-server:latest
+    depends_on:
+      - redis
+    environment:
+      PORT: ${PORT}
+      REDIS_URL: "redis:6379"
+      REDIS_CLUSTER: "false"
+      BASE_URL: "${BASE_URL}"
+      TENANT_ID: ${TENANT_ID}
+      CLIENT_ID: ${CLIENT_ID}
+      CLIENT_SECRET: ${CLIENT_SECRET}
+      APP_NAME: ***REMOVED***
+  redis:
+    image: redis

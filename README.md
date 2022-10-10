@@ -26,17 +26,23 @@ use Azure Active Directory blade to register a new app (i.e. AZR-Stg-AdAp-CaC1-F
 in its Certificates & secrets tab, create a new client secret, this is required for later stage.  (See bottom of this doc for helpful hint on steps needed to add authorization scope that is *not* Microsoft Graph so the token can be validated by jwt lib)
 
 ## Launch the app:
+Assuming you have built your docker container like this: 
+```
+$ docker build . -t tog-management-server:latest
+```
 the following example shows you how to test it locally: 
 ```sh
+$ docker run -d -p 6379:6379 --name redis_local redis
+$ REDIS_HOST=$(docker inspect redis_local --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}')
 $ docker run -d -p 3000:3000 \
- -env "PORT=3000" \
- -env 'REDIS_URL=localhost:6379' \
- -env 'REDIS_CLUSTER="false"' \
- -env 'BASE_URL="http://localhost:3000"' \
- -env 'TENANT_ID="***REMOVED***"' \
- -env 'CLIENT_ID="***REMOVED***"' \
- -env 'CLIENT_SECRET="***REMOVED***"' \
- -env 'APP_NAME="***REMOVED***"' \
+ --env "PORT=${PORT}" \
+ --env "REDIS_URL=${REDIS_HOST}:6379" \
+ --env "REDIS_CLUSTER=false" \
+ --env "BASE_URL=${BASE_URL}" \
+ --env "TENANT_ID=${TENANT_ID}" \
+ --env "CLIENT_ID=${CLIENT_ID}" \
+ --env "CLIENT_SECRET=${CLIENT_SECRET}" \
+ --env "APP_NAME=${APP_NAME}" \
   tog-management-server
 ```
 
