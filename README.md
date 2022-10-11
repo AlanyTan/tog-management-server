@@ -30,7 +30,25 @@ Assuming you have built your docker container like this:
 ```
 $ docker build . -t tog-management-server:latest
 ```
-the following example shows you how to test it locally: 
+### Configuration variables
+Before launching, you shall have the following environment variables set properly
+* `PORT` the port this management server will be listening on
+* `REDIS_URL` the Redis server address, i.e. "localhost:6379"
+* `REDIS_CLUSTER` if this redis is a clust i.e. "false"
+* `BASE_URL` this is the base URL where the management server can be reached (i.e. public domain name with external port), also $BASE_URL/auth/redirect need to be registered in the Azure apps registration. i.e. "http://localhost:3000"
+* `TENANT_ID` this is the Azure tenant in which the app is registered i.e. "***REMOVED***"
+* `CLIENT_ID` the ClientID is assigned to the app when it is registered in Azure, "***REMOVED***"
+* `CLIENT_SECRET` the client secret configured in Azure app registration 
+* `APP_NAME`= the name of the app registration i.e. "***REMOVED***"
+
+### Using docker compose
+You can use the included compose.yaml to launch locally:
+```
+$ docker compose up
+```
+or, 
+### Using docker cli
+The following example shows you how to launch it locally for testing: 
 ```sh
 $ docker run -d -p 6379:6379 --name redis_local redis
 $ REDIS_HOST=$(docker inspect redis_local --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}')
@@ -46,19 +64,13 @@ $ docker run -d -p 3000:3000 \
   tog-management-server
 ```
 
-### Configuration variables
+### deploy to kubernetes
+Please make sure you have a redis instance running, and set up the REDIS_URL accordingly, then: 
+```
+$ kubectl apply -f ./deployment.yaml 
+```
 
-* `PORT` the port this management server will be listening on
-* `REDIS_URL` the Redis server address, i.e. "localhost:6379"
-* `REDIS_CLUSTER` if this redis is a clust i.e. "false"
-* `BASE_URL` this is the base URL where the management server can be reached (i.e. public domain name with external port), also $BASE_URL/auth/redirect need to be registered in the Azure apps registration. i.e. "http://localhost:3000"
-* `TENANT_ID` this is the Azure tenant in which the app is registered i.e. "***REMOVED***"
-* `CLIENT_ID` the ClientID is assigned to the app when it is registered in Azure, "***REMOVED***"
-* `CLIENT_SECRET` the client secret configured in Azure app registration 
-* `APP_NAME`= the name of the app registration i.e. "***REMOVED***"
-
-
-## usage:
+## Usage:
 To use the management server, visit the root of the base_url, i.e. `http://localhost:3000`
 The management server will try to validate you via your Authorization Bearer token in the header or the cookie it has assigned to you after your previous successful login. 
 

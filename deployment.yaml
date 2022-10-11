@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tog-management-server
+spec:
+  selector:
+    matchLabels:
+      app: tog-management-server
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: tog-management-server
+    spec:
+      containers:
+      - name: tog-management-server
+        image: tog-management-server:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: PORT
+          value: ${PORT}
+        - name: REDIS_URL
+          value: "redis:6379"
+        - name: REDIS_CLUSTER
+          value: "false"
+        - name: BASE_URL
+          value: "${BASE_URL}"
+        - name: TENANT_ID
+          value: ${TENANT_ID}
+        - name: CLIENT_ID
+          value: ${CLIENT_ID}
+        - name: CLIENT_SECRET
+          value: ${CLIENT_SECRET}
+        - name: APP_NAME
+          value: ${APP_NAME}
