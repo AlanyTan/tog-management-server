@@ -54,6 +54,6 @@
   },
 
   // install all dependent packages after container is built and files copied into
-  "postCreateCommand": "npm install husky --save-dev && npm set-script prepare \"husky install\" && npm run prepare",
+  "postCreateCommand": "npm install husky --save-dev && npm set-script prepare \"husky install\" && npm run prepare && curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh && curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash",
   "postStartCommand": "npm update -g"
 }

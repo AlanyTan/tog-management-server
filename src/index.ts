@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import  express  from 'express';
 import cookieParser from 'cookie-parser';
-import  pino  from 'pino';
+import  pino from 'pino';
 import  pinoHttp  from 'express-pino-logger';
 
 import  auth  from './routes/auth_aad.js';

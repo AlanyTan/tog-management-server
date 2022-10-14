@@ -3,14 +3,14 @@
  * Licensed under the MIT License.
  */
 import express from "express";
-import msal from '@azure/msal-node';
+import * as msal from '@azure/msal-node';
 import jwt from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
 import {appConfig } from "../services/config.js"
 
 
 const REDIRECT_URI = appConfig.baseUrl + "/auth/redirect";
-const AUTH_URL = appConfig.baseUrl + "/auth";
+//const AUTH_URL = appConfig.baseUrl + "/auth";
 const AUTHORITY="https://login.microsoftonline.com/" + appConfig.TENANT_ID
 const DISCOVERY_KEYS_ENDPOINT = AUTHORITY + "/discovery/v2.0/keys";
 
@@ -22,18 +22,18 @@ const config = {
         authority: AUTHORITY,
         clientSecret: appConfig.CLIENT_SECRET
     },
-    system: {
+    system: {
         loggerOptions: {
-            loggerCallback(loglevel, message, containsPii) {
-                console.log(message);
+            loggerCallback(loglevel:any, message:any, containsPii:any) {
+                console.log(loglevel, message, containsPii);
             },
             piiLoggingEnabled: false,
-            logLevel: msal.LogLevel.Verbose,
+            logLevel: msal?.LogLevel?.Verbose,
         }
     }
 };
 
-const validateJwt = (req, res, next) => {
+const validateJwt = (req:any, res:any, next:any) => {
     let authHeader = req.headers.authorization;
     //in case the jwt is in the cookie: 
     if ( authHeader == null ) {
@@ -52,7 +52,7 @@ const validateJwt = (req, res, next) => {
                 console.log(err);
                 return res.send("Not authorized: <script> window.location.assign('/auth')</script>" + err.message, 403);
             }
-            req.user=payload.unique_name;
+            req.user = ( typeof payload == "object" ) ? payload["unique_name"] : "someone" ;
             next();
         });
         //return true;
@@ -64,13 +64,13 @@ const validateJwt = (req, res, next) => {
 
 export {validateJwt}
 
-const getSigningKeys = (header, callback) => {
+const getSigningKeys = (header: any, callback:any) => {
     var client = jwksClient({
         jwksUri: DISCOVERY_KEYS_ENDPOINT
     });
 
     client.getSigningKey(header.kid, function (err, key) {
-        var signingKey = key.publicKey || key.rsaPublicKey;
+        var signingKey = key?.getPublicKey();
         callback(null, signingKey);
     });
 }
@@ -94,10 +94,9 @@ const auth = express.Router()
 
  .get('/redirect', (req, res) => {
     const tokenRequest = {
-        code: req.query.code,
-        //scopes: ["user.read"],
         scopes: ["api://" + appConfig.CLIENT_ID + "/" + appConfig.APP_NAME],
         redirectUri: REDIRECT_URI,
+        code: (typeof req.query.code == "string" )? req.query.code : "",
     };
 
     

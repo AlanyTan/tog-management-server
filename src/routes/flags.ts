@@ -48,7 +48,7 @@ const flags = express.Router()
           res.status(400).json({message:"no valid session data provided."});
         } else {
           try {
-            const session=JSON.parse(decodeURI(req.query?.session));
+            const session=JSON.parse(decodeURI((typeof req.query["session"] === "string" ) ? req.query["session"] : "" ));
             res.status(200).json(resolveState(flag.rollout, flag.timestamp || 0, session.id, session.traits ?? [] ));
           } catch (err) {
             res.status(400).json({message:"session data is not properly encoded or stringified." + err}); 
