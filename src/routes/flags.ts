@@ -2,9 +2,9 @@ import  express  from 'express';
 import { FlagClient, FlagNotFoundError , resolveState} from 'tog-client';
 import  bodyParser  from 'body-parser'
 import  Joi  from '@hapi/joi';
-import {appConfig} from '../services/config.js';
-import  audit  from '../services/audit.js';
-import { validateJwt} from './auth_aad.js';
+import {appConfig} from '../services/config';
+import  audit  from '../services/audit';
+import { validateJwt} from './auth_aad';
 
 
 const client = new FlagClient(appConfig.redisUrl, { cluster: appConfig.isRedisCluster })

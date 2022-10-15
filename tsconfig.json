@@ -30,12 +30,11 @@
       "outDir": "dist"
     },
     "include": [
-      "./src/**/*.js",
       "./src/**/*.ts"
     ],
     "exclude": [
       "./src/**/*.test.ts"
 
     ]
-  }
+}
   

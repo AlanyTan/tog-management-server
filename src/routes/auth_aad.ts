@@ -6,7 +6,7 @@ import express from "express";
 import * as msal from '@azure/msal-node';
 import jwt from "jsonwebtoken";
 import jwksClient from "jwks-rsa";
-import {appConfig } from "../services/config.js"
+import {appConfig } from "../services/config"
 
 
 const REDIRECT_URI = appConfig.baseUrl + "/auth/redirect";

@@ -1,45 +1,45 @@
-const express = require('express')
-const request = require('supertest')
-const { FlagClient } = require('tog-client')
+import express from 'express'
+import request from 'supertest'
+import { FlagClient } from 'tog-client'
 
-const redisUrl = 'redis://127.0.0.1:6379'
-process.env.REDIS_URL = redisUrl
+const redisUrl = process.env.REDIS_URL ?? ""
+const testToken = process.env.TESTTOKEN ?? ""
 
-const router = require('./flags')
+
+import router from './flags'
 const app = express().use(router)
 
 const client = new FlagClient(redisUrl)
 
-afterAll(() => client.redis.quit())
-afterAll(router.quit)
-//afterEach(() => client.redis.flushdb())
+
+afterAll(async () => {await client.redis.quit(); })
+//afterAll(router.delete)
+afterEach(() => client.redis.flushdb())
 
 describe('flags api', () => {
   describe('list flags', () => {
     test('returns list of flags', async () => {
       const flags = [
         { name: 'one', rollout: [{ value: true }] },
-        { name: 'two', rollout: [{ percentage: 30, value: true }] },
-        { name: 'capv2.alerts', rollout: [{ percentage: 40, value: true }] },
-        { name: 'capv1', rollout: [ { value:true }]}
+        { name: 'two', rollout: [{ percentage: 30, value: true }] }
       ]
-        .map(f => ({ namespace: 'capmetrics', ...f }))
+        .map(f => ({ namespace: 'test_ns', ...f }))
 
       await Promise.all(flags.map(flag => client.saveFlag(flag)))
 
       return request(app)
         .get('/test_ns')
-        .set('Authorization', 'Bearer abc123')
+        .set('Authorization', `Bearer ${testToken}`)
         .expect(200)
-        .then(res => expect(res.body).toMatchObject(flags))
+        .then((res:any) => expect(res.body).toMatchObject(flags))
     })
 
     test('returns empty', () => {
       return request(app)
         .get('/test_ns')
-        .set('Authorization', 'Bearer abc123')
+        .set('Authorization', `Bearer ${testToken}`)
         .expect(200)
-        .then(res => expect(res.body).toEqual([]))
+        .then((res:any) => expect(res.body).toEqual([]))
     })
   })
 
@@ -53,9 +53,9 @@ describe('flags api', () => {
 
       return request(app)
         .get('/test_ns/one')
-        .set('Authorization', 'Bearer abc123')
+        .set('Authorization', `Bearer ${testToken}`)
         .expect(200)
-        .then(res => expect(res.body).toMatchObject({
+        .then((res:any) => expect(res.body).toMatchObject({
           namespace: 'test_ns',
           name: 'one',
           rollout: [{ value: true }]
@@ -65,9 +65,9 @@ describe('flags api', () => {
     test('returns flag not found', async () => {
       return request(app)
         .get('/test_ns/one')
-        .set('Authorization', 'Bearer abc123')
+        .set('Authorization', `Bearer ${testToken}`)
         .expect(404)
-        .then(res => expect(res.body).toEqual({
+        .then((res:any) => expect(res.body).toEqual({
           message: 'flag not found'
         }))
     })
@@ -84,7 +84,7 @@ describe('flags api', () => {
       const res = await request(app)
         .put('/test_ns/one')
         .send({ rollout: [{ value: false }] })
-        .set('Authorization', 'Bearer abc123')
+        .set('Authorization', `Bearer ${testToken}`)
         .expect(200)
 
       expect(res.body).toEqual({
@@ -101,7 +101,7 @@ describe('flags api', () => {
       const res = await request(app)
         .put('/test_ns/one')
         .send({ rollout: [{ value: false }] })
-        .set('Authorization', 'Bearer abc123')
+        .set('Authorization', `Bearer ${testToken}`)
         .expect(200)
 
       expect(res.body).toEqual({
@@ -118,7 +118,7 @@ describe('flags api', () => {
       await request(app)
         .put('/test_ns/one')
         .send({ rollout: 'THIS IS INVALID' })
-        .set('Authorization', 'Bearer abc123')
+        .set('Authorization', `Bearer ${testToken}`)
         .expect(422)
     })
   })
@@ -133,14 +133,14 @@ describe('flags api', () => {
 
       return request(app)
         .delete('/test_ns/one')
-        .set('Authorization', 'Bearer abc123')
+        .set('Authorization', `Bearer ${testToken}`)
         .expect(204)
     })
 
     test('returns 404 for inexistent flag', async () => {
       return request(app)
         .delete('/test_ns/one')
-        .set('Authorization', 'Bearer abc123')
+        .set('Authorization', `Bearer ${testToken}`)
         .expect(404)
     })
   })
