@@ -1,5 +1,5 @@
 //module.exports = function audit (req, resource, body) {
-const audit = (req, resource, body) => {
+const audit = (req: any, resource: any, body:any) => {
     const user=((req.user != null) ? req.user : "someone") + " from " + req.client.remoteAddress + ":" + req.client.remotePort;
     req.log.child({
     category: 'audit',

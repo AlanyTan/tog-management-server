@@ -1,5 +1,4 @@
 import express from "express";
-import cookieParser from "cookie-parser";
 import { validateJwt } from "./auth_aad.js";
 
 const simpleui = express.Router()  

@@ -12,7 +12,7 @@ const appConfig = {
 }
 export {appConfig};
 
-function getEnv (key) {
+function getEnv (key:string) {
   const value = process.env[key]
   if (!value) {
     throw new Error(`missing required environment variable ${key}`)
@@ -21,7 +21,7 @@ function getEnv (key) {
   return value
 }
 
-function getList (key) {
+function getList (key:string) {
   const value = process.env[key]
   return value
     ? value.split(',').map(x => x.trim())

@@ -11,7 +11,7 @@
             "cwd": "${workspaceRoot}",
             "runtimeArgs": [
                 "run-script",
-                "start:debug"
+                "start"
             ],
             "runtimeExecutable": "npm",
             "skipFiles": [
@@ -20,15 +20,19 @@
             "type": "node"
         },
         {
-            "type": "node",
+            "name": "Debug via NPM",
             "request": "launch",
-            "name": "Launch Program",
+            "envFile": "${workspaceFolder}/.env",
+            "cwd": "${workspaceRoot}",
+            "runtimeArgs": [
+                "run-script",
+                "start:debug"
+            ],
+            "runtimeExecutable": "npm",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "envFile": "${workspaceFolder}/.env",
-            "cwd": "${workspaceRoot}",
-            "program": "${workspaceFolder}/src/index.js"
+            "type": "node"
         },
         {
             "name": "Test via NPM test",

@@ -1,0 +1,40 @@
+{
+    "$schema": "http://json.schemastore.org/tsconfig",
+    "compilerOptions": {
+      "target": "es6",
+      "allowJs": true,
+      "esModuleInterop":true,
+      "forceConsistentCasingInFileNames": true,
+      "module": "commonjs",
+      "declaration": true,
+      "sourceMap": true,
+      "experimentalDecorators": true,
+      "types": [
+        "jest"
+      ],
+      "lib": [
+        "es6",
+        "scripthost",
+        "es2015.collection",
+        "es2015.promise",
+        "es2015.iterable"
+      ],
+      "noImplicitAny": true,
+      "noImplicitReturns": true,
+      "noImplicitThis": true,
+      "noUnusedLocals": true,
+      "strictFunctionTypes": true,
+      "strictNullChecks": true,
+      "strictPropertyInitialization": true,
+      "allowSyntheticDefaultImports": true,
+      "outDir": "dist"
+    },
+    "include": [
+      "./src/**/*.ts"
+    ],
+    "exclude": [
+      "./src/**/*.test.ts"
+
+    ]
+}
+  
