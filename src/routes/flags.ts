@@ -29,7 +29,7 @@ const flags = express.Router()
       .catch(next)
   })
 
-  .get('/:namespace/:name', (req, res, next) => {
+  .get('/:namespace/:name', validateJwt, (req, res, next) => {
     const { namespace, name } = req.params
     return flagClient.getFlag(namespace, name)
       .then(flag => res.status(200).json(flag))
