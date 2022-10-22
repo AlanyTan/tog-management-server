@@ -63,7 +63,9 @@
     ],
     "rootDir": ".",
     "testRegex": "\\.(spec|test)\\.ts$",
-    "modulePathIgnorePatterns": ["<rootDir>/linepulse-mdl-featuretoggle-client-node"],
+    "modulePathIgnorePatterns": [
+      "<rootDir>/linepulse-mdl-featuretoggle-client-node"
+    ],
     "collectCoverage": true,
     "collectCoverageFrom": [
       "<rootDir>/src/**/*.(t|j)s"
@@ -76,7 +78,9 @@
       "<rootDir>/linepulse-mdl-featuretoggle-client-node"
     ],
     "coverageDirectory": "<rootDir>/test/coverage",
-    "setupFiles": ["dotenv/config"],
+    "setupFiles": [
+      "dotenv/config"
+    ],
     "preset": "ts-jest",
     "testEnvironment": "node"
   },

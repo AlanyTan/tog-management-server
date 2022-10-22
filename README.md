@@ -79,6 +79,21 @@ If you can't be authenticated, or authorized (i.e. your jwt expired), you will b
 Once you login, you should see the simple management page where you can add/update/delete flags. 
 * NOTE! the UI is very simple and there aren't lots of validations and double checks, so be careful what you are doing. 
 
+### Set "Application Namespace"
+Namespace are groups of flags.  i.e. for Linepulse, we use "linepulse" (all lower case) for its namespace.  type in "linepulse" in the Application Namespace box and click [list all flags] button next to it. 
+Please note, the UI does not automatically refresh this list, so you might need to click on this [list all flags] button to make sure you see the latest data (including after you make updates)
+
+The list will look like sections, each section is one feature flag. You can click either the "edit" button to make changes to this feature, or "DELETE" button to delete a feature.  Be careful, there is no fine grained access control, so you might delete flags other people still need!!!!!  All changes are audited and logged, so while the system can't prevent you from doing damage, it sure keep track of it ;-) 
+
+Within each feature flag section, you can see the Rollout strategies (to understand rollout strategies see below).  The first one is the default one -- it matches any sessions that uses this feature flag, but it has the lowest precedence, meaning any other strategies that are also a match would be effective over this default. 
+The next several entries (if there are any) are "Audience specific" roll out strategies, these strategies only apply to sessions that match all the listed traits. 
+
+When you clic on the edit button the current values of the respective feature flag will be populated to the Add/Edit feature section.  You can then make changes here, and click the "update" button to save the value. 
+
+To add a new feature flag, just type a new name into the "Add/Edit feature" box.  Please note, there is no duplicate check, so if you type in a flag that already exist, you will overwrite it. 
+
+If you need to add additional roll out strategies (i.e. turn feature on only for beta-users in Prd system) you can use the [+ Audience Specific toggle] button to add a new rollout strategy (a.k.a different audience).  Please note, you can't leave the traits box (the Audience n box) blank, because it will be conflict with the default strategy. 
+
 
 ## How Tog works
 ### Basic concepts: 
@@ -118,7 +133,9 @@ However, it is allowed to have multiple rollout strategies in the rollout array 
 #### traits matching
 For a given session, the tog-client will look for rollout strategies that have traits match the session traits. 
 
-Only if a all the traits of a rollout strategy are found in the session traits, it is considered a match. (This means when you define rollout strategy, traits are "and" op, only sessions meet all the traits will be a match)
+Only if a all the traits of a rollout strategy are found in the session traits, it is considered a match. (This means when you define rollout strategy, traits are "and" op, only sessions meet all the traits will be a match).   
+Traits are comma separated string arrays.  Please note, you can't use quatation marks to make a trait name contain ",".  comma cannot be used in in trait names.  Although quotation marks technically can, howeer, because of the escape requirements, using quotation marks in trait names can be hard to predict, it might become \" instead of ". 
+
 
 If multiple matches are found, the one with most number of traits will take precedence (this means the more specific a rollout strategy is, the higher it is in priority.  for example, if you have a ["big"] rollout strategy and a ["big","blue"] strategy, and your session has traits ["big","blue","circle"], both rollout stragy will match, but the ["big","blue"] will be the effective one, because it is more specific)
 

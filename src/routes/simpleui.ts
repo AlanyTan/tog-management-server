@@ -19,23 +19,31 @@ const simpleui = express.Router()
             <h1>
                 Simple Feature Flag change...
             </h1>
-            <form name="myform" action="javascript:update()">
-                <label for="appname"> Application name: </label> <input type="text" name="appname">             <button type="submit" formaction="javascript:listflags()">list all flags</button>
-                <br><br>
-                <button style="color:red" type="submit" formaction="javascript:deleteflag()"> (BE CAREFUL!!!) Delete flag </button>
-                <label for="featurename"> for feature </label> <input type="text" name="featurename" > 
-                <label for="onoff"> OR, turn it </label> 
+            <form name="namespaceform" action="javascript:listflags()">
+                <label for="appname"> Application Namespace: </label> <input type="text" name="appname">             <button type="submit" formaction="javascript:listflags()">list all flags</button>
+            </form>
+            <br>            
+            <div  id="flags" > </div>     
+            <br>
+            <hr>
+            <form name="featureform" action="javascript:update()">
+                <label for="featurename">Add/Edit feature </label> <input type="text" name="featurename" > 
+                <label for="onoff"> set </label> <input type="number" id="percentage" title="Optional, default equal to 100" value="" name="percentage" min="0" max="100">
+                <label for="onoff">% of sessions to </label> 
                 <select name="onoff" id="onoff">
-                <option value="True">On</option>
-                <option value="False">Off</option>
+                  <option value="True">On</option>
+                  <option value="False">Off</option>
                 </select> 
                 <input name="Submit"  type="submit" value="Update"/><br>
                 <span style='color:red;margin-right:25em; display:inline-block;'>&nbsp;</span>
                 <button type="submit" formaction="javascript:addrollout()"> + Audience Specific toggle </button>
-                
             </form>
+            <form name="rolloutsform">
+            <input type="hidden" name="rollout_count" value="0"> 
             <div id="rollouts" > </div>
-            <p  id="flags" > </p>
+            </form>
+            <div id="last_update"> </div>
+
 
             <!-- Including library.js and app.js -->
             <script >
@@ -88,19 +96,28 @@ const simpleui = express.Router()
                     return resData;
                 }
             }
-            function addrollout () {
-                var number = document.getElementById("rollouts").children.length/3;
+            function addrollout (trait_i = "", value_i = "False", percentage_i = "") {
+                let number = Number(document.rolloutsform.rollout_count.value) + 1;
                 var container = document.getElementById("rollouts");
                 ////remove children in the container if needed
                 //while (container.hasChildNodes()) {
                 //    container.removeChild(container.lastChild);
-                container.appendChild(document.createTextNode("Audience " + (number+1) + " tag(s):" ));
+                container.appendChild(document.createTextNode("Audience " + (number) + " tag(s):" ));
                 var input = document.createElement("input");
                 input.type = "text";
-                input.id = "traits" + (number+1);
+                input.width = "25%";
+                input.id = "traits" + (number);
+                input.value=trait_i;
+                container.appendChild(input);
+                var input = document.createElement("input");
+                input.type = "number";
+                input.min = 0;
+                input.max = 100; 
+                input.value = percentage_i;
+                input.id = "percentage" + (number);
                 container.appendChild(input);
                 var select = document.createElement("select");
-                select.id = "value" + (number+1);
+                select.id = "value" + (number);
                 var option1 = document.createElement("option");
                 option1.text = "On";
                 option1.value = "True";
@@ -109,56 +126,99 @@ const simpleui = express.Router()
                 option2.text = "Off";
                 option2.value = "False";
                 select.appendChild(option2);
+                select.value=value_i;
                 container.appendChild(select);
                 container.appendChild(document.createElement("br"));
-
-                
+                document.rolloutsform.rollout_count.value = number;
+            }
+            function editflag(flag) {
+                document.rolloutsform.rollout_count.value = 0;
+                let container = document.getElementById("rollouts");
+                while (container.hasChildNodes()) {
+                container.removeChild(container.firstChild);
+                }
+                document.featureform.onoff.value = flag.onoff;
+                flag.rollout.forEach ( (item, index) => {
+                    if (item.traits == null) {
+                        document.featureform.percentage.value = item.percentage ?? "";
+                        document.featureform.onoff.value = item.value ? "True" : "False";
+                    } else {
+                        addrollout(item.traits, item.value ? "True" : "False", item.percentage ?? "")
+                    }
+                })
             }
             function listflags() {
                 const http = new EasyHTTP;
-                const appname = document.myform.appname.value;
+                const appname = document.namespaceform.appname.value;
                 const URL = 'http://localhost:3000/flags/' + appname  ;
                 http.get(URL)
-                .then (data => document.getElementById("flags").innerHTML = JSON.stringify(data).replaceAll('},', "},  <br>"))
+                .then (data => {
+                    let text ="" ;
+                    data.forEach ((flag, index) => text += "<hr> <form name='feature" + index + "'> <b>" + flag.name + "</b> " + "<button type='submit' formaction='javascript:editflag(" + JSON.stringify(flag) + ")'> edit </button> <button style='color:red'  type='submit' formaction='javascript:deleteflag(\\"" + flag.name + "\\")'> DELETE </button> <br> &nbsp &nbsp" + flag.rollout.reduce((result,item)=> {return result + "<br> &nbsp  &nbsp" + JSON.stringify(item) },"") + "</form> <br>");
+                    document.getElementById("flags").innerHTML = text;
+                    //document.getElementById("flags").innerHTML = JSON.stringify(data).replaceAll('},', "},  <br>&nbsp")
+                })
                 .catch(err => console.log(err));
             }
-            function deleteflag() {
+            function deleteflag(feature_name) {
                 const http = new EasyHTTP;
-                const onoff = document.myform.onoff.value === "True" ;
-                const appname = document.myform.appname.value;
-                const featurename = document.myform.featurename.value;
+                const onoff = document.featureform.onoff.value === "True" ;
+                const appname = document.namespaceform.appname.value;
+                const featurename = feature_name ?? document.featureform.featurename.value;
                     if (confirm("Are you SURE you want to delete " + appname + "/" + featurename +"?") == true) {
                         const URL = 'http://localhost:3000/flags/' + appname + '/' + featurename ;
                     http.delete(URL)
-                    .then(data => document.getElementById("flags").innerHTML =  "deleting [" + featurename + "]..." + ((data == null )? "" : JSON.stringify(data)))
-                    .catch(err => document.getElementById("flags").innerHTML =  "Failed to delete [" + featurename + "]");
+                    .then(data => {
+                        let text = "";
+                        document.getElementById("last_update").innerHTML =  "deleting [" + featurename + "]..." + ((data == null )? "" : JSON.stringify(data))})
+                    .catch(err => document.getElementById("last_update").innerHTML =  "Failed to delete [" + featurename + "]");
                 }
             }
 
             function update() {
                 const http = new EasyHTTP;
-                const onoff = document.myform.onoff.value === "True" ;
-                const appname = document.myform.appname.value;
-                const featurename = document.myform.featurename.value;
+                const onoff = document.featureform.onoff.value === "True" ;
+                const appname = document.namespaceform.appname.value;
+                const featurename = document.featureform.featurename.value;
                 const URL = 'http://localhost:3000/flags/' + appname + '/' + featurename ;
                 // User Data
                 const rollout = {
                      value: onoff 
                 }
+                const percentage = (document.featureform.percentage.value ?? 100)
+                if ( percentage != "" ) {
+                    rollout.percentage = Number(percentage)
+                }
                 let rollouts = [];
-                const no_of_rollouts = document.getElementById("rollouts").children.length/3;
+                const no_of_rollouts = Number(document.rolloutsform.rollout_count.value);
                 for ( i = 1; i <= no_of_rollouts; i++ ) {
-                    traits_control_name="traits" + i;
-                    let traits=document.getElementById(traits_control_name).value.split(",");
-                    let value=(document.getElementById("value"+i).value === "True"); 
-                    rollouts.push({traits,value})
+                    //let value=(document.getElementById("value" + i).value === "True"); 
+                    let percentage=(document.getElementById("percentage" + i).value ); 
+                    let traits=document.getElementById("traits" + i)?.value.split(",");
+
+                    const rollout_n = {value: (document.getElementById("value" + i).value === "True")}
+                    if ( traits !== "" && traits !== null ) {
+                        rollout_n.traits = traits;
+                    }
+                    if ( percentage !== "" && percentage !== null ) {
+                        rollout_n.percentage = Number(percentage);
+                    }
+                    rollouts.push(rollout_n)
                 }
                 const data = { rollout: [rollout, ...rollouts] }
                 console.log(data, URL)
 
                 http.put(URL, data)
-                .then(data => document.getElementById("flags").innerHTML = JSON.stringify(data))
-                //.then(data => console.log(data))
+                .then(data => {document.getElementById("last_update").innerHTML = JSON.stringify(data);
+                    let container = document.getElementById("rollouts");
+                    while (container.hasChildNodes()) {
+                    container.removeChild(container.firstChild);
+                    }
+                    document.rolloutsform.rollout_count.value = 0;
+                    document.featureform.featurename.value = "";
+                    document.featureform.percentage.value = "";
+                    document.featureform.onoff.value = "True";
+                 })
                 .catch(err => console.log(err));
             }
             
